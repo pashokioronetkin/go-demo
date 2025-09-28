@@ -1,13 +1,17 @@
 package main
 
+// ENV set ... && go run .
+
 import (
 	"demo/password/account"
+	"demo/password/encrypter"
 	"demo/password/files"
 	"demo/password/output"
 	"fmt"
 	"strings"
 
 	"github.com/fatih/color"
+	"github.com/joho/godotenv"
 )
 
 // func newAccount(login, password, urlString string) (*account, error) {
@@ -57,7 +61,11 @@ func menuCounter() func() {
 
 func main() {
 	fmt.Println("__Менеджер паролей__")
-	vault := account.NewVault(files.NewJsonDb("data.json"))
+	err := godotenv.Load()
+	if err != nil {
+		output.PrintError("Не найден env файл")
+	}
+	vault := account.NewVault(files.NewJsonDb("data.vault"), *encrypter.NewEncrypter())
 	counter := menuCounter()
 Menu:
 	for {
